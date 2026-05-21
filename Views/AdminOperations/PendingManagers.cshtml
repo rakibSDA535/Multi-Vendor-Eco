@@ -1,0 +1,347 @@
+﻿@model IEnumerable<Shop111.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Manager Management";
+}
+
+<div class="container py-4">
+    <div class="card shadow border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0 fw-bold"><i class="bi bi-people-fill me-2"></i> Manager Management</h3>
+            <span class="badge bg-primary fs-6">Total: @Model.Count()</span>
+        </div>
+
+        <div class="card-body">
+            @if (TempData["msg"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["msg"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active me-2" data-bs-toggle="pill" data-bs-target="#pills-pending" type="button">
+                        Pending Requests (@Model.Count(u => !u.IsApproved))
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-approved" type="button">
+                        Approved Managers (@Model.Count(u => u.IsApproved))
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                @* ১. পেন্ডিং রিকোয়েস্ট ট্যাব *@
+                <div class="tab-pane fade show active" id="pills-pending">
+                    @{
+                        var pending = Model.Where(u => !u.IsApproved);
+                    }
+                    @* <div class="table-responsive">
+                        <table class="table align-middle table-hover">
+                            <thead class="table-light"> *@
+                    <div class="tab-pane fade show active" id="pills-pending">
+                        <table id="pendingTable" class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>OwnerImage</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Location</th>
+                                    <th>Join Date</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in pending)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@(string.IsNullOrEmpty(item.Vendor?.OwnerImage) ? "/uploads/no-image.png" : "/uploads/" + item.Vendor.OwnerImage)"
+                                                 class="rounded-circle border" width="50" height="50" style="object-fit:cover;" />
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold">@item.FullName</div>
+                                        </td>
+                                        <td>@item.Email</td>
+                                        <td>@item.PhoneNumber</td>
+                                        <td><i class="bi bi-geo-alt-fill text-danger"></i> @(item.Vendor?.Location?.City ?? "N/A")</td>
+                                        <td>@(item.Vendor?.JoinDate?.ToString("dd MMM yyyy") ?? "N/A")</td>
+                                        <td>
+                                            <div class="d-flex gap-1 justify-content-center">
+                                                @* Details Button *@
+                                                <a asp-action="ManagerDetails" asp-route-userId="@item.Id" class="btn btn-info btn-sm text-white">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                
+                                                <form asp-action="ApproveManager" method="post">
+                                                    <input type="hidden" name="userId" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                                </form>
+                                                
+                                                <form asp-action="RejectManager" method="post">
+                                                    @* userId নামটা যেন কন্ট্রোলারের প্যারামিটারের সাথে মিলে *@
+                                                    <input type="hidden" name="userId" value="@item.Id" />
+    
+                                                    <button type="submit" class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Are you sure you want to reject this request?')">
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                @* ২. অ্যাপ্রুভড ম্যানেজার ট্যাব *@
+                <div class="tab-pane fade" id="pills-approved">
+                    @{
+                        var approved = Model.Where(u => u.IsApproved);
+                    }
+                    <div class="tab-pane fade show active" id="pills-pending">
+                        <table id="approvedTable" class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>OwnerImage</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in approved)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@(string.IsNullOrEmpty(item.Vendor?.OwnerImage) ? "/uploads/no-image.png" : "/uploads/" + item.Vendor.OwnerImage)"
+                                                 class="rounded-circle border" width="50" height="50" style="object-fit:cover;" />
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold">@item.FullName</div>
+                                            
+                                        </td>
+                                        <td>@item.Email</td>
+                                        <td>@(item.Vendor?.Location?.City ?? "N/A")</td>
+                                        <td>
+                                            @if (item.Vendor != null && item.Vendor.IsLive)
+                                            {
+                                                <span class="badge bg-success">Live</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Paused</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1 justify-content-center">
+                                                @* Details Button *@
+                                                <a asp-action="ManagerDetails" asp-route-userId="@item.Id" class="btn btn-info btn-sm text-white">
+                                                    <i class="bi bi-eye"></i>Details
+                                                </a>
+
+                                                <form asp-action="ToggleManagerStatus" method="post">
+                                                    <input type="hidden" name="userId" value="@item.Id" />
+                                                    <button type="submit" class="btn @(item.Vendor?.IsLive == true ? "btn-warning" : "btn-primary") btn-sm">
+                                                        <i class="bi @(item.Vendor?.IsLive == true ? "bi-pause" : "bi-play")"></i> @(item.Vendor?.IsLive == true ? "Pause" : "Resume")
+                                                    </button>
+                                                </form>
+
+                                                <form asp-action="DeleteManager" method="post">
+                                                    <input type="hidden" name="userId" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this manager?')">
+                                                        <i class="bi bi-trash"></i>Delete
+                                                    </button>
+                                                </form>
+                                                <form asp-action="ManagerEdit" method="get">
+                                                    <input type="hidden" name="userId" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </button>
+                                                </form> 
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*=======User,Manager,Admin Count and Show=======*@
+<div class="container py-4">
+    <div class="row mb-4 g-3">
+        <div class="col-md-3">
+            <div class="card bg-dark text-white p-3 text-center" onclick="filterTable('all')" style="cursor:pointer">
+                <h6>Total Users</h6>
+                <h3>@ViewBag.TotalUsers</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <!-- ডাটাবেসে যেহেতু 'User' আছে, তাই প্যারামিটার 'User' দিন -->
+            <div class="card bg-info text-white p-3 text-center" onclick="filterTable('User')" style="cursor:pointer">
+                <h6>Customers</h6>
+                <h3>@ViewBag.UserCount</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white p-3 text-center" onclick="filterTable('Manager')" style="cursor:pointer">
+                <h6>Managers</h6>
+                <h3>@ViewBag.ManagerCount</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white p-3 text-center" onclick="filterTable('Admin')" style="cursor:pointer">
+                <h6>Admins</h6>
+                <h3>@ViewBag.AdminCount</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body">
+            <table id="allUserTable" class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th> @* কলাম ৩ *@
+                        <th>Role</th>  @* কলাম ৪ (ফিল্টার করার জন্য) *@
+                        <th>Registration Date</th> @* কলাম ৫ *@
+                    </tr>
+                </thead>
+                @* <tbody>
+                    @foreach (var user in Model)
+                    {
+                        string roleName = "User";
+                        string badgeClass = "bg-info";
+
+                        if (user.Email.ToLower().Contains("admin"))
+                        {
+                            roleName = "Admin";
+                            badgeClass = "bg-danger";
+                        }
+                        else if (user.Vendor != null)
+                        {
+                            roleName = "Manager";
+                            badgeClass = "bg-primary";
+                        }
+
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@(user.PhoneNumber ?? "N/A")</td>
+                            <td><span class="badge @badgeClass">@roleName</span></td>
+                            <td>@user.Vendor?.JoinDate?.ToString("dd MMM yyyy")</td>
+                        </tr>
+                    }
+                </tbody> *@
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        // ডিফল্ট ভ্যালু
+                        string roleName = "User";
+                        string badgeClass = "bg-info";
+
+                        // ডাটাবেস থেকে আসা রোলের সাথে মিল রেখে লজিক (Screenshot_13.png অনুযায়ী)
+                        if (user.Vendor != null)
+                        {
+                            roleName = "Manager";
+                            badgeClass = "bg-primary";
+                        }
+                        else if (user.Email.Contains("admin", StringComparison.OrdinalIgnoreCase))
+                        {
+                            roleName = "Admin";
+                            badgeClass = "bg-danger";
+                        }
+
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@(user.PhoneNumber ?? "N/A")</td>
+                            @* এই কলামটি (৩ নম্বর ইনডেক্স) ফিল্টার হিসেবে কাজ করবে *@
+                            <td><span class="badge @badgeClass">@roleName</span></td>
+                            <td>@(user.Vendor != null ? user.Vendor?.JoinDate?.ToString("dd MMM yyyy") : "N/A")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>@*Continue*@
+@*==============*@
+
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    
+    <script>
+        $(document).ready(function () {
+        // পেন্ডিং টেবিলের জন্য সার্চ এবং পেজিনেশন
+        $('#pendingTable').DataTable({
+        "pageLength": 10,
+        "language": {
+        "search": "Search Manager:"
+        }
+        });
+
+        // অ্যাপ্রুভড টেবিলের জন্য সার্চ এবং পেজিনেশন
+        $('#approvedTable').DataTable({
+        "pageLength": 10,
+        "language": {
+        "search": "Search Active Manager:"
+        }
+        });
+        });
+        //==================Reject button=========================
+        $(document).ready(function () {
+        // পেজ লোড হওয়ার পর প্রথম ট্যাবটি একটিভ রাখার জন্য
+        var firstTab = document.querySelector('#pills-tab button');
+        if (firstTab) {
+        bootstrap.Tab.getInstance(firstTab)?.show();
+        }
+
+        // যদি আপনি চান রিজেক্ট বাটনে ক্লিক করলে কনফার্মেশন বক্স আসবে
+        $('.btn-danger').click(function (e) {
+        if (!confirm("Are you sure you want to reject/delete this request?")) {
+        e.preventDefault();
+        }
+        });
+        });
+        //===========================================
+        //=============User,Manager,Admin Count and Show==============================
+
+        $(document).ready(function () {
+        var table = $('#allUserTable').DataTable({
+        "pageLength": 10,
+        "language": { "search": "Quick Search:" }
+        });
+
+        // ফিল্টার ফাংশন (গ্লোবাল স্কোপে রাখার জন্য window ব্যবহার করা হয়েছে)
+        window.filterTable = function(role) {
+        var table = $('#allUserTable').DataTable();
+        if (role === 'all') {
+        table.search('').columns().search('').draw();
+        } else {
+        // ৩ নম্বর কলামে (Role) হুবহু এই শব্দটি খুঁজবে
+        table.column(3).search("^" + role + "$", true, false).draw();
+        }
+        }
+        });//Continue
+    </script>
+}
+@*==============*@

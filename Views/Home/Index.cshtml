@@ -1,0 +1,738 @@
+﻿@* @using Shop111.Models.DTOs *@
+@model ProductDisplayModel
+@{
+    ViewData["Title"] = "Product Display"; // tytle
+}
+<div class="my-4 product-filter-section full-width-row mt-2" style=" z-index: 1030;">
+    <form asp-action="Index" class="row g-3 align-items-center justify-content-start full-width-row" method="get" id="filterForm">
+        <div class="col-auto">
+            <label class="visually-hidden" for="genreId">Genres</label>
+            <select class="form-select" id="genreId" name="genreId">
+                <option value="" selected>Filter by Created</option> @foreach (var genre in Model.Genres)
+                {
+                    <option selected="@(genre.Id == Model.GenreId)" value="@genre.Id">@genre.GenreName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-auto ">
+            <label class="visually-hidden" for="sterm">Search by title</label>
+            <div class="input-group">
+                <div class="input-group-text input-group-text-custom">
+                    <i class="bi bi-search"></i>
+                </div>
+                <input type="text" class="form-control" value="@Model.STerm" id="sterm" name="sterm" placeholder="Search by Product">
+            </div>
+        </div>
+
+        <div class="col-auto">
+            <button type="submit" class="btn btn-success">Search</button>
+        </div>
+        <div class="col-auto">
+            <a href="/Home/Index" class="btn btn-info">Reset</a>
+        </div>
+
+        @*price range slider + reset button*@
+        <div style="min-width:250px;">
+            <h5>Price Range</h5>
+
+            <p>
+                Find With Price: <strong id="priceValue" name="priceValue">@ViewBag.MaxPrice</strong>
+            </p>
+            <div class="mt-2" style="width:250px;">
+                <input type="range"
+                       id="priceSlider"
+                       min="0"
+                       max="100000"
+                       value="@ViewBag.MaxPrice"
+                       style="width:100%; cursor:pointer; accent-color: red;"
+                       oninput="updateFromSlider(this.value)"
+                       onchange="submitForm()" />
+                <div class="flex-grow-1">
+                    <label class="small">Min ($)</label>
+                    <input type="number"
+                           id="minInput"
+                           name="minPrice"
+                           class="form-control form-control-sm"
+                           value="@ViewBag.MinPrice"
+                           oninput="if(this.value < 0) this.value = 0;"
+                           onchange="syncSliderAndSubmit()" />
+                </div>
+                <div class="flex-grow-1">
+                    <label class="small">Max ($)</label>
+                    <input type="number"
+                           id="maxInput"
+                           name="maxPrice"
+                           class="form-control form-control-sm"
+                           value="@ViewBag.MaxPrice"
+                           oninput="if(this.value < 0) this.value = 0;"
+                           onchange="syncSliderAndSubmit()" />
+                </div>
+            </div>
+        </div>
+       @*price range slider + reset button*@
+       @*Carousel Effect top sold product*@
+       <div class="container-fluid px-0 mt-3" style="width:75%;">
+
+            @if (Model.TopNSoldProducts != null && Model.TopNSoldProducts.Any())
+            {
+                <div id="bannerCarousel" class="carousel slide hero-banner shadow-lg" data-bs-ride="carousel">
+
+                    <!-- Indicators -->
+                    <div class="carousel-indicators">
+                        @{
+                            int j = 0;
+                        }
+                        @foreach (var item in Model.TopNSoldProducts)
+                        {
+                            <button type="button"
+                                    data-bs-target="#bannerCarousel"
+                                    data-bs-slide-to="@j"
+                                    class="@(j==0 ? "active" : "")">
+                            </button>
+                            j++;
+                        }
+                    </div>
+
+                    <div class="carousel-inner">
+                        @{
+                            int i = 0;
+                        }
+
+                        @foreach (var item in Model.TopNSoldProducts)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")" data-bs-interval="4000">
+
+                                <div class="row align-items-center p-4 p-md-5">
+
+                                    <!-- Left Content -->
+                                    <div class="col-md-7 text-white ps-lg-5">
+                                        <h1 class="display-4 fw-bold mb-3 text-gradient">
+                                            @item.ProductName
+                                        </h1>
+                                        <p class="lead text-light mb-4" >
+                                             <span class="fw-semibold" style="color:black">Total Sold:@item.TotalUnitSold</span> 
+                                        </p>
+                                        <p class="lead text-light mb-4">
+                                             <span class="fw-semibold" style="color:black">Produced by:@item.CompanyName</span>
+                                        </p>
+
+                                    </div>
+
+                                    <!-- Right Image -->
+                                    <div class="col-md-5 text-center mt-4 mt-md-0">
+                                        <div class="glow-container">
+                                            <div class="glow-effect"></div>
+
+                                            <img src="/Images/@(string.IsNullOrEmpty(item.Image) ? "no-symbol.jpg" : item.Image)"
+                                                 class="banner-img"
+                                                 alt="@item.ProductName" />
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            i++;
+                        }
+                    </div>
+
+                    <!-- Controls -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon custom-arrow"></span>
+                    </button>
+
+                    <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon custom-arrow"></span>
+                    </button>
+
+                </div>
+            }
+        </div>
+        @*Carousel Effect top sold product*@
+    </form>
+</div>
+
+
+
+
+@*Picture Section*@
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-2 mt-4 full-width-row">
+    @foreach (var product in Model.Products)
+    {
+        <div class="col">
+            <div class="card custom-card">
+                @*Normal pic show(S1)*@
+                @* @if (string.IsNullOrEmpty(product.Image))
+                {
+                    <img src="/Images/no-symbol.jpg" class="card-img-top-custom" alt="No image available">
+                }
+                else
+                {
+                    <img src="/Images/@product.Image" class="card-img-top-custom" alt="@product.ProductName Image">
+                } *@
+                @*On click Picture to show details (S2)*@
+                @{
+                    // imageUrl ভেরিয়েবলটি সংজ্ঞায়িত করা হলো, যা ছবিটি না থাকলে ডিফল্ট ছবি Path দেবে
+                    string imageUrl = string.IsNullOrWhiteSpace(product.Image) ? "/Images/no-symbol.jpg" : $"/Images/{product.Image}";
+
+                    // ছবির নামের জন্য alt Text সেট করা হলো
+                    string altText = string.IsNullOrWhiteSpace(product.Image) ? "No image available" : $"{product.ProductName} Image";
+                }
+                <a asp-controller="Product" asp-action="ProductDetails" asp-route-id="@product.Id" class="d-block">
+                    <img src="@imageUrl"
+                         class="card-img-top-custom"
+                         style="width: 100%;  object-fit: cover;"
+                         alt="@altText">
+                </a>
+                <div class="card-body card-body-custom d-flex flex-column">
+                    <div class="favorite-btn-overlay d-flex align-items-start mb-2">
+                        <h5 class="card-title text-info fw-bold me-auto mb-0">@product.ProductName</h5>
+                        <button type="button" onclick="add(@product.Id)" class="btn btn-outline-danger" id="favoriteButton_@product.Id" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                            <i class="bi bi-heart btn-outline-danger"></i>
+                        </button>
+                    </div>
+                    
+                    <p class="card-text mb-2">
+                        <b class="card-text text-black"> Create: </b>@product.GenreName <br />
+                        <b class="card-text text-black">Company: </b>@product.CompanyName
+                    </p>
+                    <span class="product-price">৳ @product.Price</span>
+
+                    <div class="mt-3">
+                        @if (product.Quantity > 0)
+                        {
+                            <button type="button" onclick="add(@product.Id)" class="btn btn-sm btn-cart-custom me-1 mb-1">
+                                <i class="bi bi-cart-plus"></i> Add to cart
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="out-of-stock-badge me-1 mb-1">Out of stock</span>
+                        }
+                        @* <a asp-controller="Product" asp-action="ProductDetails" asp-route-id="@product.Id" type="button" class="btn btn-sm btn-details-custom me-1 mb-1">Detail</a> *@
+                        <button type="button" onclick="showProductDetailsAndBuy(@product.Id)" class="btn btn-sm btn-buy-custom mb-1">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@*================experiment===================*@
+
+
+
+@*================experiment===================*@
+
+
+
+@*===================Pop up Toast nofication=======================*@
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="addToCartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success!</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Product added to cart! 🛒
+        </div>
+    </div>
+</div>
+@*===================Pop up Toast nofication=======================*@
+
+
+<!--------------------- Button (angular bracket Icon) ---------------------->
+<button class="btn btn-danger side-button" style="color:cyan" type="button" data-bs-toggle="offcanvas" data-bs-target="#productDetails" aria-controls="productDetails">
+    <i class="bi bi-chevron-left"></i>
+</button>
+
+<!-- Offcanvas / Side Page -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="productDetails" aria-labelledby="productDetailsLabel" style="background-color: deepskyblue; color:  black;">
+    <div class="offcanvas-header" style="color:black">
+        <h5 id="productDetailsLabel"><strong>Delivery Options</strong></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <hr />
+    <div>
+        <ul>
+            <li><b style="color:darkred">📞Hotline Number1:</b> +88001555558</li>
+            <li><b style="color:darkred">📞Hotline Number2:</b> +88069854556</li>
+            <li><b>📞Personal Number1:</b> +8801235555558</li>
+            <li><b>📞Personal Number2:</b> +8801755558777</li>
+        </ul>
+    </div>
+    <div class="offcanvas-body" style="color:black">
+        <p><strong>📍Available Delivery Area:</strong> All over Bangladesh</p>
+        <p><strong>⏳Available Delivery Time:</strong> Inside Dhaka-12.00<br />Outside Of Dhaka- 2 days</p>
+        <p><strong>⏰Delivery Time:</strong> 1-7 working days</p>
+        <p><strong>💲Shipping Charge:</strong> Free Shipping</p>
+        <p><strong>Payment Options:</strong></p>
+        <hr />
+        <ul>
+            <li>Cripto</li>
+            <li>Bkash</li>
+            <li>MasterCard</li>
+            <li>Visa</li>
+        </ul>
+        <div class="cartpic">
+            <ul class="typeofcart">
+                <li class="cart1"><img title="Cripto" src="/Images/Cryptocurrency_logos.jpg" height="100" width="150" /></li>
+                <li class="cart2"><img title="Bkash" src="/Images/image-191915-1716977471.jpg" height="100" width="150" /></li>
+                <li class="cart3"><img title="MasterCard" src="/Images/mastercard_PNG23.png" height="100" width="150" /></li>
+                <li class="cart4"><img title="Visa" src="/Images/visa.png" height="100" width="150" /></li>
+            </ul>
+        </div>
+        <hr />
+
+        <div>
+            @*================For Footer===================*@
+            <footer class="bg-info text-dark text-center py-4 mt-auto">
+                <div class="container">
+                    <p class="mb-2">&copy; @DateTime.Now.Year - Connect Us With-<strong>Social Platform</strong></p>
+                    <div>
+                        <a href="https://www.facebook.com/yourprofile" target="_blank"
+                               class="text-dark mx-3" style="font-size: 30px; text-decoration: none;">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://twitter.com/yourprofile" target="_blank"
+                               class="text-dark mx-3" style="font-size: 30px; text-decoration: none;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.instagram.com/yourprofile" target="_blank"
+                               class="text-dark mx-3" style="font-size: 30px; text-decoration: none;">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="mailto:support@khati.com"
+                               class="text-dark mx-3" style="font-size: 30px; text-decoration: none;">
+                            <i class="fa fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+            </footer>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+            <style>
+                            body {
+                                display: flex;
+                                flex-direction: column;
+                                min-height: 100vh;
+                            }
+
+                            .body-content {
+                                flex: 1;
+                            }
+
+                            footer a:hover {
+                                color: #0d6efd !important;
+                            }
+            </style>
+            
+
+
+            @*================For Footer===================*@
+        </div>
+    </div>
+</div>
+<!--------------------- Button (angular bracket Icon) ----------------------><!-- Left Side Button -->
+@*======================main Js=============*@
+@section Scripts {
+    <script>
+        // টোস্ট অবজেক্ট তৈরি করুন
+        var toastEl = document.getElementById('addToCartToast');
+        var cartToast = new bootstrap.Toast(toastEl, {
+            autohide: true,
+            delay: 3000 // ৩ সেকেন্ড পর নিজে থেকে বন্ধ হয়ে যাবে
+        });
+        // আপনার জাভাস্ক্রিপ্ট কোড
+        async function add(productId) {
+            var usernameEl = document.getElementById("username");
+            if (usernameEl == null) {
+                window.location.href = "/Identity/Account/Login";
+            }
+            try {
+                var response = await fetch(`/Cart/AddItem?productId=${productId}`);
+                if (response.status == 200) {
+                    var result = await response.json();
+                    var cartCountEl = document.getElementById("cartCount");
+                    cartCountEl.innerHTML = result;
+                    // window.location.href = "#cartCount"; // এটি বাদ দেওয়া যেতে পারে, কারণ এটি পুরো পেজকে জাম্প করায়
+                    cartToast.show();// ✅ এইখানে টোস্টটি শো করা হবে!
+                } else {
+                    alert("Something Wrong with adding To cart");
+                }
+            }
+            catch (err) {
+                console.log(err);
+                alert("Please Login or Register to continue.");
+            }
+        }
+
+
+
+        //To open side button click ok Buy now button
+        function showProductDetailsAndBuy(productId) {
+            // 1. Offcanvas ট্রিগার করা (উপরে দেওয়া প্রথম বাটনের কাজ)
+            // 'productDetails' ID সহ offcanvas উপাদানটি নির্বাচন করুন
+            var offcanvasElement = document.getElementById('productDetails');
+            // Offcanvas instance তৈরি বা খুঁজে বের করুন (Bootstrap 5)
+            var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+            // Offcanvas দেখানো
+            offcanvas.show();
+            // এই লাইনটি আপনার পণ্য যোগ করার ফাংশনকে কল করবে
+            add(productId);
+        }
+
+
+
+        //@*price range slider + reset button*@
+            // ৪. স্লাইডার আপডেট লজিক (স্লাইডার সরালে টেক্সট ও ইনপুট চেঞ্জ হবে)
+        function updateFromSlider(val) {
+            // ইনপুট বক্স আপডেট
+            document.getElementById("maxInput").value = val;
+            
+            // উপরের টেক্সট (Find With Price) আপডেট
+            const priceDisplay = document.getElementById("priceValue");
+            if (priceDisplay) {
+                priceDisplay.innerText = val;
+            }
+        }
+
+        // ৫. ইনপুট বক্স সিঙ্ক ও সাবমিট (টাইপ করলে স্লাইডার চেঞ্জ হবে)
+        function syncSliderAndSubmit() {
+            let minVal = parseFloat(document.getElementById("minInput").value) || 0;
+            let maxVal = parseFloat(document.getElementById("maxInput").value) || 0;
+            let slider = document.getElementById("priceSlider");
+
+            // লজিক: মিনিমাম যদি ম্যাক্সিমাম থেকে বেশি হয়ে যায়
+            if (minVal > maxVal) {
+                // আমরা মিনিমামকেই ম্যাক্সিমাম এর সমান করে দিচ্ছি যাতে ইউজারকে বারবার অ্যালার্ট না দিতে হয়
+                document.getElementById("minInput").value = maxVal;
+            }
+
+            // স্লাইডার এবং ডিসপ্লে টেক্সট আপডেট
+            slider.value = maxVal;
+            const priceDisplay = document.getElementById("priceValue");
+            if (priceDisplay) {
+                priceDisplay.innerText = maxVal;
+            }
+
+            // ফর্ম সাবমিট
+            submitForm();
+        }
+
+        // ৬. ফাইনাল সাবমিট
+        function submitForm() {
+            document.getElementById("filterForm").submit();
+        }
+
+        //
+    </script>
+}
+@*======================main Js=============*@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+
+    .full-width-row {
+        width: 100vw; /* পুরো viewport চওড়া  */
+        margin-left: calc(-50vw + 50%); /*দুই দিক সমানভাবে বাড়াবে*/
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-bottom: 10px;
+    }
+    /* custom style */
+    .product-filter-section {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    }
+
+    .custom-card {
+        background-color: white; /* White background */
+        border: 1px solid #dee2e6; /* light boarder */
+        border-radius: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%; /* semetric height of product section */
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 4px rgba(0,0,0,.05); /* light shadow */
+        position: relative;
+    }
+
+        .custom-card:hover {
+            transform: translateY(-5px); /* littlebit heigh to hobber */
+            box-shadow: 0 4px 8px rgba(0,0,0,.1); /* increase shadow for hobber */
+        }
+
+    .card-img-top-custom {
+        object-fit: cover; /* ছবির আকার ঠিক রাখার জন্য */
+        height: 250px; /* ছবির জন্য একটি নির্দিষ্ট উচ্চতা */
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .card-body-custom {
+        padding: 15px;
+        flex-grow: 1; /* বডির অংশটি জায়গা নেবে */
+        color: #333; /* ✅ টেক্সটের রঙ হালকা কালো করা হলো*/
+    }
+
+    .card-title-custom {
+        color: #007bff; /* ✅ টাইটেলের জন্য নীল রঙ */
+        font-weight: bold;
+        font-size: 1.5rem; /* ফন্ট সাইজ বাড়ানো হলো */
+        margin-bottom: 0.5rem;
+    }
+
+    /* নতুন ছবিতে "Created By: Packet" এবং "Company: eee" টেক্সট আছে */
+    .card-text-custom {
+        color: #6c757d; /* হালকা ধূসর রঙ */
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+        .card-text-custom b {
+            color: #333; /* লেবেলের জন্য গাঢ় রঙ */
+        }
+
+    .card-text b {
+        color: #6c757d; /* তথ্যের লেবেলগুলোর জন্য ধূসর রঙ */
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #28a745; /* মূল্যের জন্য সবুজ রঙ */
+        margin-top: 10px; /* উপরে স্পেস বাড়ানো হলো */
+        margin-bottom: 15px; /* নিচে স্পেস বাড়ানো হলো */
+        display: block;
+    }
+
+    .out-of-stock-badge {
+        background-color: #dc3545; /* লাল ব্যাকগ্রাউন্ড */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: 600;
+        display: inline-block;
+        font-size: 1rem; /* ✅ ফন্ট সাইজ বাড়ানো হলো */
+    }
+
+    /* বাটনের ডিজাইন ছবির মতো সবুজ ও নীল রঙের জন্য */
+    .btn-cart-custom {
+        background-color: #ffc107; /* Add to cart - হলুদ/কমলা */
+        border-color: #ffc107;
+        color: #212529;
+        padding: 8px 15px;
+        font-size: 1rem;
+    }
+
+        .btn-cart-custom:hover {
+            background-color: #e0a800;
+            border-color: #e0a800;
+            color: #212529;
+        }
+
+    /* বাটনের ডিজাইন নতুন ছবির মতো */
+    .btn-details-custom {
+        background-color: #17a2b8; /* Details - নীল */
+        border-color: #17a2b8;
+        color: white;
+        padding: 8px 15px; /* ✅ প্যাডিং বাড়ানো হলো */
+        font-size: 1rem; /* ✅ ফন্ট সাইজ বাড়ানো হলো */
+    }
+
+        .btn-details-custom:hover {
+            background-color: #138496;
+            border-color: #138496;
+        }
+
+    .btn-buy-custom {
+        background-color: #28a745; /* Buy Now - সবুজ */
+        border-color: #28a745;
+        color: white;
+        padding: 8px 15px; /* ✅ প্যাডিং বাড়ানো হলো */
+        font-size: 1rem; /* ✅ ফন্ট সাইজ বাড়ানো হলো */
+    }
+
+        .btn-buy-custom:hover {
+            background-color: #1e7e34;
+            border-color: #1e7e34;
+        }
+
+    /* ফিল্টার ফর্মের জন্য কাস্টম স্টাইল */
+    .input-group-text-custom {
+        background-color: #28a745; /* সবুজ আইকন ব্যাকগ্রাউন্ড */
+        color: white;
+        border-color: #28a745;
+    }
+    /*card gulir akar*/
+    .typeofcart {
+        padding-bottom: 500px;
+        height: 10px;
+        width: 10px;
+    }
+
+    /*for side page*/
+    .side-button {
+        position: fixed;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        z-index: 1050;
+        border-radius: 8px 0 0 8px;
+        padding: 10px 12px;
+    }
+
+    .offcanvas {
+        width: 380px; /* panel এর চওড়া */
+    }
+    /*for side page*/
+
+    /*for cart*/
+    ul.typeofcart {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+        /* Grid layout */
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 কলাম */
+        gap: 20px; /* সারি ও কলামের মাঝে ফাঁকা জায়গা */
+        justify-items: center;
+        align-items: center;
+    }
+
+        ul.typeofcart li img {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 5px;
+            transition: transform 0.3s ease;
+        }
+
+            ul.typeofcart li img:hover {
+                transform: scale(1.05); /*hover করলে একটু বড় হবে*/
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+    /*for cart*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* Background */
+.hero-banner {
+    background: linear-gradient(135deg, #b2edff 0%, #2bcde2 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    min-height: 420px;
+    position: relative;
+}
+
+/* Gradient Title */
+.text-gradient {
+    background: linear-gradient(90deg, #ff4d4d, #ff0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Glow Effect */
+.glow-container {
+    position: relative;
+    display: inline-block;
+}
+
+.glow-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.5), transparent 70%);
+    filter: blur(40px);
+    border-radius: 50%;
+    animation: pulse-red 2.5s infinite;
+}
+
+/* Image */
+.banner-img {
+    width: 280px;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 0, 0, 0.3);
+    position: relative;
+    z-index: 2;
+    transition: transform 0.4s ease;
+}
+
+.banner-img:hover {
+    transform: scale(1.08);
+}
+
+
+/* Arrows */
+.custom-arrow {
+    background-color: rgba(255, 0, 0, 0.7);
+    border-radius: 50%;
+    padding: 500px;
+}
+
+/* Animation */
+@@keyframes pulse-red {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+

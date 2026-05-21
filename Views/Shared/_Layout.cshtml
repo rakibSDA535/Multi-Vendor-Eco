@@ -1,0 +1,275 @@
+﻿@using Shop111.Constants
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kenakata - Online Kenakata store</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    @* side button *@
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    @* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> *@
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    @* side button *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap 5 CSS (যদি অলরেডি না থাকে) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-toggler bg-info sticky-top py-3" style=" background-image: url(' /Images/');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;">
+        @* <nav class="navbar navbar-expand-lg navbar-toggler bg-info "> *@
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/Home/Index"><img src="/Images/pngtree-online-shop.png" height="150" width="150" /> </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/Home/Index">
+                            🏠Home
+                            <span class="visually-hidden">(current)</span>
+                        </a>
+                    </li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @* সকল লগইন করা ইউজার নিজের অর্ডার দেখতে পারবে *@
+                        <li class="nav-item">
+                            <a class="nav-link" href="/UserOrder/UserOrders">📲My Orders</a>
+                        </li>
+                        @* শুধু অ্যাডমিন দেখবে *@
+                        @if (User.IsInRole(Roles.Admin.ToString()))
+                        {
+                            <li class="nav-item"><a class="nav-link" href="/AdminOperations/Dashboard">🎬Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/AdminOperations/PendingManagers">🔔 Pending Approvals</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/AdminOperations/AllOrders">📜Orders</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Stock/Index">📈Stock</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Product/Index">🎁Products</a></li>
+                        }
+
+                        @* শুধু ম্যানেজার দেখবে *@
+                        @if (User.IsInRole(Roles.Manager.ToString()))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="vendorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Vendor  Pannel
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="vendorDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Vendor" asp-action="Index">🏢 Vendor Dashboard</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="/Stock/Index">📈Stock</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Vendor" asp-action="AddProduct">➕ Add New Product</a></li>
+                                </ul>
+                            </li>
+
+                        }
+                    }
+                    
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">🗃️Type Of Product</a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" style="background-color: yellow; color: black;">Fermecy</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Jhandu Bum</a>
+                            <a class="dropdown-item" href="#">Hunjidal HC</a>
+                            <a class="dropdown-item" href="#">Napa 10</a>
+                            <a class="dropdown-item" href="#">Paracitamal</a>
+
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" style="background-color: yellow; color: black;">For Self</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Cloths</a>
+                            <a class="dropdown-item" href="#">Hardwar goods</a>
+                            <a class="dropdown-item" href="#">Glass Item</a>
+                            <a class="dropdown-item" href="#">TV</a>
+                            <a class="dropdown-item" href="#">Fridge</a>
+                            <a class="dropdown-item" href="#">Furniture</a>
+
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" style="background-color: yellow; color: black;">For Kitchen</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Oven</a>
+                            <a class="dropdown-item" href="#">Diasliy</a>
+                            <a class="dropdown-item" href="#">Cooking pot/Boiler</a>
+
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" style="background-color: yellow; color: black;">For Bedroom</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Luxarious Bed</a>
+                            <a class="dropdown-item" href="#">Sofa</a>
+                            <a class="dropdown-item" href="#">Table</a>
+                            <a class="dropdown-item" href="#">Almirah</a>
+
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" style="background-color: yellow; color: black;">For Decoration</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Fish Aqiuriam</a>
+                            <a class="dropdown-item" href="#">Flowers</a>
+                            <a class="dropdown-item" href="#">Wall Fram</a>
+                            <a class="dropdown-item" href="#">Pet Animal</a>
+                        </div>
+                    </li>
+                </ul>
+                
+                <partial name="_LoginPartial" />
+
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="my-2">
+            <partial name="_Notifications" />
+        </div>
+        @RenderBody()
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>@*For Vendor/Manager Dropdown in Registration Form*@
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<script>
+    loadCartCount();
+    async function loadCartCount() {
+    try {
+    var response = await fetch(`/Cart/GetTotalItemInCart`);
+    console.log(response)
+    if (response.status == 200) {
+    var result = await response.json();
+    var cartCountEl = document.getElementById("cartCount");
+    cartCountEl.innerHTML = result;
+    }
+    }
+    catch (err) {
+    console.log(err);
+    }
+    }
+</script>
+</html>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+@*================For Footer===================*@
+<footer class="footer bg-dark text-light pt-sm-0 pb-sm-0 mt-auto">
+    <div class="container">
+        <div class="row">
+            <!-- Column 1: About Us -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="text-uppercase mb-3 fw-bold text-info">About Khati</h5>
+                <p>
+                    Khati is your trusted online marketplace offering authentic products
+                    at affordable prices. We ensure quality, fast delivery, and secure payment.
+                </p>
+            </div>
+
+            <!-- Column 2: Quick Links -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="text-uppercase mb-3 fw-bold text-info">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/Home/Index" class="text-light text-decoration-none">🏠 Home</a></li>
+                    <li><a href="/Product/AllProducts" class="text-light text-decoration-none">🛍️ Shop</a></li>
+                    <li><a href="/About" class="text-light text-decoration-none">ℹ️ About Us</a></li>
+                    <li><a href="/Contact" class="text-light text-decoration-none">📞 Contact</a></li>
+                    <li><a href="/Privacy" class="text-light text-decoration-none">🔒 Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Customer Service -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="text-uppercase mb-3 fw-bold text-info">Customer Service</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/Order/Track" class="text-light text-decoration-none">🚚 Track Order</a></li>
+                    <li><a href="/Return" class="text-light text-decoration-none">↩️ Return Policy</a></li>
+                    <li><a href="/FAQ" class="text-light text-decoration-none">❓ FAQ</a></li>
+                    <li><a href="/Support" class="text-light text-decoration-none">💬 Support</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Contact & Social -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <h5 class="text-uppercase mb-3 fw-bold text-info">Connect With Us</h5>
+                <p><i class="fa fa-map-marker-alt me-2 text-info"></i>Dhaka, Bangladesh</p>
+                <p><i class="fa fa-phone me-2 text-info"></i>+880 1700-123456</p>
+                <p><i class="fa fa-envelope me-2 text-info"></i>support@khati.com</p>
+
+                <div class="mt-3">
+                    <a href="https://facebook.com/yourprofile" target="_blank" class="text-light me-3 fs-4">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/yourprofile" target="_blank" class="text-light me-3 fs-4">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/yourprofile" target="_blank" class="text-light me-3 fs-4">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://youtube.com/yourchannel" target="_blank" class="text-light fs-4">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-light" />
+
+        <div class="text-center">
+            <p class="mb-0">
+                &copy; @DateTime.Now.Year <strong>Khati.com</strong> | All Rights Reserved |
+                Developed by <a href="https://github.com/yourname" target="_blank" class="text-info fw-bold">Rakib Islam</a>
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+    footer {
+    font-size: 15px;
+    }
+
+    footer a:hover {
+    color: #17a2b8 !important;
+    text-decoration: underline;
+    }
+
+    @@media (max-width: 576px) {
+    footer .col-md-3 {
+    text-align: center;
+    }
+    }
+</style>
+@*================For Footer===================*@
+
+
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+    body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    }
+
+    .body-content {
+    flex: 1;
+    }
+
+    footer a:hover {
+    color: #0d6efd !important;
+    }
+</style>
+@*================For Footer===================*@
+

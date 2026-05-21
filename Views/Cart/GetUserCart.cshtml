@@ -1,0 +1,104 @@
+﻿@using Shop111.Models
+
+
+@*new*@
+
+@model ShoppingCart
+@{
+    ViewData["Title"] = "My Cart";
+    bool hasOutOfStockItem = false;
+}
+
+<div class="container my-4">
+    @if (Model != null && Model.CartDetails != null && Model.CartDetails.Count > 0)
+    {
+        <h1 class="mb-4 text-center fw-bold text-bg-info text-dark">❤️🛒 My Cart❤️</h1>
+
+        <div class="table-responsive shadow-lg rounded-3" style="background-color:aqua">
+            <table class="table table-hover align-middle" style="background-color:azure ">
+                <thead class="table-warning">
+                    <tr class="text-center">
+                        <th>Product</th>
+                        <th>Image</th>
+                        <th>Create</th>
+                        <th>Company</th>
+                        <th>Unit Price (BDT)</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CartDetails)
+                    {
+                        bool isOutOfStock = (item.Product.Stock == null || item.Quantity >= item.Product.Stock.Quantity);
+                        if (isOutOfStock)
+                        {
+                            hasOutOfStockItem = true;
+                        }
+
+                        <tr class="text-center @(isOutOfStock ? "table-warning" : "")">
+                            <td class="fw-semibold">@item.Product.ProductName</td>
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(item.Product.Image) ? "/Images/no-symbol-colorful-no-text-illustration-K5hH2ehj.jpg" : "/Images/" + item.Product.Image)"
+                                     alt="Product Image"
+                                     class="img-fluid rounded"
+                                     style="width: 130px; height: 100px; object-fit: cover;" />
+                            </td>
+                            <td>@item.Product.Genre.GenreName</td>
+                            <td>@item.Product.CompanyName</td>
+                            <td>@item.Product.Price.ToString("0.00")</td>
+                            <td>@item.Quantity</td>
+                            <td class="fw-bold text-success">
+                                @(item.Product.Price* item.Quantity)
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    @if (!isOutOfStock)
+                                    {
+                                        <a class="btn btn-success" title="Increase quantity" href="/Cart/AddItem?productId=@item.ProductId&&redirect=1">+</a>
+                                    }
+                                    else
+                                    {
+                                        <span style="border: 1px solid;padding: 8px 8px;color: red;border-radius: 5px;margin-right:4px" class="fw-bold">Out of stock</span>
+                                    }
+                                    <a class="btn btn-danger" title="Decrease quantity" href="/Cart/removeitem?productId=@item.ProductId">-</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light rounded shadow-sm">
+            @if (hasOutOfStockItem)
+            {
+                <div class="alert alert-danger mb-0 py-2 px-3 fw-bold" role="alert">
+                    ⚠️ Checkout disabled: Please remove "Out of Stock" items to proceed.
+                </div>
+            }
+
+            <h4 class="text-dark mb-0">
+                Total (BDT):
+                <span class="text-primary fw-bold">
+                    @(Model.CartDetails.Sum(item => item.Product.Price * item.Quantity).ToString("0.00"))
+                </span>
+            </h4>
+
+            <a href="/Cart/Checkout"
+               class="btn btn-lg btn-primary shadow-sm @(hasOutOfStockItem ? "disabled" : "")"
+               aria-disabled="@(hasOutOfStockItem ? "true" : "false")">
+                Proceed to Checkout →
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="text-center mt-5">
+            <h3 class="text-muted">🛍️ Your cart is empty</h3>
+            <a href="/Home" class="btn btn-outline-primary mt-3">Browse Products</a>
+        </div>
+    }
+</div>
+

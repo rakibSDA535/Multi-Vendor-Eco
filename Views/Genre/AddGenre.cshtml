@@ -1,0 +1,24 @@
+﻿@using Shop111.Models.DTOs
+@model GenreDTO
+@{
+    Layout = "_AdminLayout";
+}
+@* @Html.ValidationSummary() *@
+<div style="width:50%">
+<h2> Add Build with </h2>
+<a asp-action="Index" asp-controller="Genre" class="btn btn-primary">Back</a>
+<form asp-action="AddGenre">
+   @* <input type="hidden" asp-for="Id" /> *@
+
+   <div class="my-2">
+      <label>Create</label>
+      <input type="text" class="form-control" asp-for="GenreName" />
+            <span asp-validation-for="GenreName" class="text-danger"></span>
+   </div>
+
+   <div class="my-2">
+      <button type="submit" class="btn btn-info">Add</button>
+   </div>
+</form>
+</div>
+

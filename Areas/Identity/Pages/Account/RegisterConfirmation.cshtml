@@ -1,0 +1,95 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Confirm Account";
+}
+
+<div class="confirm-container d-flex align-items-center justify-content-center">
+    <div class="confirm-card shadow-lg p-5 text-center">
+        <div class="icon-circle mb-4">
+            <i class="bi bi-envelope-check-fill"></i>
+        </div>
+
+        <h2 class="fw-bold mb-3" style="color: #2bcde2;">Check Your Email</h2>
+        
+        @{
+            if (@Model.DisplayConfirmAccountLink)
+            {
+                <div class="alert alert-warning border-0 small mb-4" style="background-color: #f0fbff;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Developer Note:</strong> Real email sender is not configured.
+                </div>
+
+                <p class="text-muted">Normally, an email would be sent to your address. For now, please use the button below to simulate confirmation:</p>
+                
+                <a id="confirm-link" href="@Model.EmailConfirmationUrl" class="btn btn-confirm text-white fw-bold py-3 px-5 shadow mt-3">
+                    Confirm My Account
+                </a>
+            }
+            else
+            {
+                <p class="fs-5 text-muted">
+                    We've sent a confirmation link to your inbox. <br />
+                    Please click the link in that email to finish setting up your account.
+                </p>
+                
+                <div class="mt-4">
+                    <a href="/" class="text-decoration-none fw-bold" style="color: #2bcde2;">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Home
+                    </a>
+                </div>
+            }
+        }
+    </div>
+</div>
+<style>
+    /* Centering the confirmation box */
+.confirm-container {
+    min-height: 70vh;
+    padding: 20px;
+}
+
+/* The White Card */
+.confirm-card {
+    background: #fff;
+    border-radius: 30px;
+    max-width: 550px;
+    width: 100%;
+}
+
+/* Animated Icon Circle */
+.icon-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #b2edff 0%, #2bcde2 100%);
+    color: white;
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto;
+    box-shadow: 0 10px 20px rgba(43, 205, 226, 0.2);
+    animation: pulse 2s infinite;
+}
+
+/* Main Button */
+.btn-confirm {
+    background: linear-gradient(45deg, #2bcde2, #0099ad);
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(43, 205, 226, 0.4) !important;
+}
+
+/* Simple pulse animation for the icon */
+@@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+</style>

@@ -1,0 +1,312 @@
+﻿@using Shop111.Models.DTOs
+@model ProductDTO
+
+@{
+    ViewData["Title"] = "Add New Product (Vendor)";
+    // যদি আপনি আলাদা লেআউট ব্যবহার করেন তবে তা এখানে সেট করুন
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm col-md-10 offset-md-1">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-shop me-2"></i>Post New Product</h4>
+            <a asp-action="Index" class="btn btn-light btn-sm text-primary">Back to List</a>
+        </div>
+        <div class="card-body">
+            <form asp-action="AddProduct" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <!-- Basic Product Info -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ProductName" class="form-label fw-bold">Product Name*</label>
+                        <input asp-for="ProductName" class="form-control" placeholder="Product name" />
+                        <span asp-validation-for="ProductName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CompanyName" class="form-label fw-bold">Company/Brand*</label>
+                        <input asp-for="CompanyName" class="form-control" placeholder="Brand name" />
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Category/Genre*</label>
+                        <div class="input-group">
+                            <select asp-for="GenreId" class="form-select" asp-items="@Model.GenreList">
+                                <option value="">-- Select Category --</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addGenreModal">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="GenreId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Price" class="form-label fw-bold">Price*</label>
+                        <div class="input-group">
+                            <span class="input-group-text">৳</span>
+                            <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="Stock.Quantity" class="form-label fw-bold">Stock*</label>
+                        <input asp-for="Stock.Quantity" type="number" class="form-control" />
+                        <span asp-validation-for="Stock.Quantity" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ReleaseDate" class="form-label fw-bold">Release Date</label>
+                        <input asp-for="ReleaseDate" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Product Image*</label>
+                        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <!-- Detail Information (Master-Detail) -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 text-secondary">Product Specifications</h5>
+                    <button type="button" id="addInfo" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add More Detail
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover border" id="productInfoTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Description (e.g. Size, Color)</th>
+                                <th>Made In</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        @* ভিউয়ের ভেতরে টেবিল বডির অংশটি এভাবে পরিবর্তন করুন *@
+                        <tbody>
+                            @if (Model.ProductInformations != null && Model.ProductInformations.Count > 0)
+                            {
+                                for (int i = 0; i < Model.ProductInformations.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input asp-for="ProductInformations[i].Id" type="hidden" />
+                                            <textarea asp-for="ProductInformations[i].Description" class="form-control" rows="1"></textarea>
+                                        </td>
+                                        <td><input asp-for="ProductInformations[i].MadeIn" class="form-control" /></td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-info"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                        <i class="bi bi-cloud-arrow-up me-2"></i>Post Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Genre Modal -->
+<div class="modal fade" id="addGenreModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" id="newGenreName" class="form-control" placeholder="Enter Category Name" />
+                    <small id="genreMessage" class="text-danger"></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="saveNewGenre" class="btn btn-success">Save Category</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row Template (Hidden) -->
+<table style="display:none">
+    <tbody id="infoRowTemplate">
+        <tr>
+            <td>
+                <input name="ProductInformations[__idx__].Id" type="hidden" value="0" />
+                <textarea name="ProductInformations[__idx__].Description" class="form-control" rows="1"></textarea>
+            </td>
+            <td><input name="ProductInformations[__idx__].MadeIn" class="form-control" /></td>
+            <td><button type="button" class="btn btn-outline-danger btn-sm remove-info"><i class="bi bi-trash"></i></button></td>
+        </tr>
+    </tbody>
+</table>
+
+@* @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+        // ১. ডাইনামিক রো রিনডেক্সিং ফাংশন
+        function reindex() {
+        $('#productInfoTable tbody tr').each(function (i, tr) {
+        $(tr).find('input, textarea').each(function () {
+        var name = $(this).attr('name');
+        if (name) {
+        var newName = name.replace(/ProductInformations\[\d+\]/, 'ProductInformations[' + i + ']');
+        $(this).attr('name', newName);
+        }
+        });
+        });
+        }
+
+        // ২. নতুন রো যোগ করা
+        $('#addInfo').click(function () {
+        var index = $('#productInfoTable tbody tr').length;
+        var template = $('#infoRowTemplate').html().replace(/__idx__/g, index);
+        $('#productInfoTable tbody').append(template);
+        reindex();
+        });
+
+        // ৩. রো ডিলিট করা
+        $('#productInfoTable').on('click', '.remove-info', function () {
+        $(this).closest('tr').remove();
+        reindex();
+        });
+
+        // ৪. Ajax দিয়ে নতুন ক্যাটাগরি সেভ করা
+        $('#saveNewGenre').click(function () {
+        var name = $('#newGenreName').val().trim();
+        if (!name) {
+        $('#genreMessage').text('Name is required.');
+        return;
+        }
+
+        $.post('/Genre/CreateGenreAjax', { genreName: name }, function (response) {
+        if (response.success) {
+        $('select[name="GenreId"]').append(new Option(response.name, response.id, true, true));
+        $('#addGenreModal').modal('hide');
+        $('#newGenreName').val('');
+        } else {
+        $('#genreMessage').text(response.message);
+        }
+        }).fail(function() {
+        $('#genreMessage').text('Error saving category.');
+        });
+        });
+        });
+    </script>
+} *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+        // ১. ইনডেক্স ঠিক করার ফাংশন
+        function reindex() {
+        $('#productInfoTable tbody tr').each(function (i, tr) {
+        $(tr).find('input, textarea').each(function () {
+        var name = $(this).attr('name');
+        if (name) {
+        var newName = name.replace(/ProductInformations\[\d+\]/, 'ProductInformations[' + i + ']');
+        $(this).attr('name', newName);
+        }
+        });
+        });
+        }
+
+        // ২. নতুন রো যোগ করা (Master-Detail)
+        $('#addInfo').click(function (e) {
+        e.preventDefault();
+
+        var index = $('#productInfoTable tbody tr').length;
+        var template = $('#infoRowTemplate').html();
+
+        // __idx__ কে বর্তমান ইনডেক্স দিয়ে পরিবর্তন করা
+        var html = template.replace(/__idx__/g, index);
+
+        $('#productInfoTable tbody').append(html);
+        reindex(); // নতুন রো যোগ করার পর ইনডেক্স চেক করা নিরাপদ
+        });
+
+        // ৩. রো ডিলিট করা (Event Delegation ব্যবহার করা হয়েছে)
+        $(document).on('click', '.remove-info', function (e) {
+        e.preventDefault();
+        $(this).closest('tr').remove();
+        reindex(); // ডিলিট করার পর অবশ্যই ইনডেক্স ঠিক করতে হবে
+        });
+
+        // ৪. Ajax দিয়ে নতুন ক্যাটাগরি (Genre) সেভ করা
+        $('#saveNewGenre').click(function (e) {
+        e.preventDefault();
+
+        var btn = $(this); // btn ভেরিয়েবল ডিফাইন করা হলো
+        var name = $('#newGenreName').val().trim();
+        var messageArea = $('#genreMessage');
+        var token = $('input[name="__RequestVerificationToken"]').val(); // টোকেন আলাদাভাবে নেওয়া হলো
+
+        if (!name) {
+        messageArea.text('Category name is required.').addClass('text-danger');
+        return;
+        }
+
+        // বাটন ডিজেবল করা
+        btn.prop('disabled', true).text('Saving...');
+
+        $.ajax({
+        url: '/Genre/CreateGenreAjax',
+        type: 'POST',
+        data: {
+        genreName: name,
+        "__RequestVerificationToken": token
+        },
+        success: function (response) {
+        if (response.success) {
+        var newOption = new Option(response.name, response.id, true, true);
+        $('select[name="GenreId"]').append(newOption).trigger('change');
+
+        $('#addGenreModal').modal('hide');
+        $('#newGenreName').val('');
+        messageArea.text('');
+        } else {
+        messageArea.text(response.message).addClass('text-danger');
+        }
+        },
+        error: function(xhr) {
+        // ৪0৩ বা ৪0৪ এরর হ্যান্ডেল করা
+        messageArea.text('Error: ' + xhr.status + ' - Access Denied or Not Found.').addClass('text-danger');
+        },
+        complete: function() {
+        btn.prop('disabled', false).text('Save Category');
+        }
+        });
+        });
+        });
+    </script>
+}

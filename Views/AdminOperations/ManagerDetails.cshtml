@@ -1,0 +1,73 @@
+﻿@model Shop111.Models.ApplicationUser
+
+<div class="container py-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-person-badge me-2"></i> Full Vendor Profile</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center border-end">
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-primary">Owner Image</h6>
+                        <img src="@(string.IsNullOrEmpty(Model.Vendor?.OwnerImage) ? "/uploads/no-image.png" : "/uploads/" + Model.Vendor.OwnerImage)"
+                             class="img-thumbnail rounded-3 shadow-sm" style="width:180px; height:180px; object-fit:cover;" />
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-success">Shop Logo / Image</h6>
+                        <img src="@(string.IsNullOrEmpty(Model.Vendor?.VendorImage) ? "/uploads/no-image.png" : "/uploads/" + Model.Vendor.VendorImage)"
+                             class="img-thumbnail rounded-3 shadow-sm" style="width:180px; height:180px; object-fit:cover;" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <table class="table table-striped">
+                        <tr><th width="30%">Full Name</th><td>@Model.FullName</td></tr>
+                        <tr><th>Email</th><td>@Model.Email</td></tr>
+                        <tr><th>Shop Email</th><td>@(Model.Vendor?.VendorEmail ?? "Not Provided")</td></tr>
+                        <tr><th>Phone</th><td>@Model.PhoneNumber</td></tr>
+                        <tr><th>Shop Name</th><td>@(Model.Vendor?.VendorName ?? "Not Provided")</td></tr>
+                        <tr><th>Trade License</th><td><span class="badge bg-info text-dark">@(Model.Vendor?.TradeLicenceNo ?? "None")</span></td></tr>
+                        <tr><th>Vendor Type</th><td>@(Model.Vendor?.VendorType ?? "General")</td></tr>
+                        <tr><th>Location</th><td>@(Model.Vendor?.Location?.City ?? "No Location")</td></tr>
+                        <tr><th>Join Date</th><td>@(Model.Vendor?.JoinDate?.ToString("F") ?? "N/A")</td></tr>
+                        <tr>
+                            <th>Address</th>
+                            <td>
+                                <p>
+                                    @Html.Raw(Model.Vendor?.VendorAddress?.Replace("\n", "<br />") ?? "N/A")
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Owner Bio</th>
+                            <td>
+                                <p class="text-muted">
+                                    @Html.Raw(Model.Vendor?.OwnerDescription?.Replace("\n", "<br />") ?? "No description available")
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Vendor Bio</th>
+                            <td>
+                            <p class="text-muted">
+                                @Html.Raw(Model.Vendor?.VendorDescription?.Replace("\n", "<br />") ?? "No description available")
+                            </p>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-between">
+            <a asp-action="PendingManagers" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to List</a>
+            @if (!Model.IsApproved)
+            {
+                <form asp-action="ApproveManager" method="post">
+                    <input type="hidden" name="userId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-success px-4">Approve This Manager</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

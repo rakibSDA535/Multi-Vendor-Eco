@@ -1,0 +1,696 @@
+﻿@page
+@model RegisterModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="register-container d-flex align-items-center justify-content-center py-5">
+    <div class="register-card shadow-lg row g-0">
+
+        <!-- LEFT -->
+        <div class="col-lg-8 p-4 p-md-5 bg-white">
+
+            <h2 class="fw-bold mb-1 text-info">
+                Join Us Today!
+            </h2>
+
+            <p class="text-muted mb-4">
+                Create your account to start shopping or selling.
+            </p>
+
+            <form id="registerForm" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                <div class="row">
+
+                    <!-- ROLE -->
+                    <div class="col-md-12 mb-3">
+
+                        <div class="form-floating custom-input">
+
+                            <select asp-for="Input.Role"
+                                    asp-items="Model.RoleList"
+                                    id="roleSelect"
+                                    class="form-select border-0 border-bottom rounded-0 px-0">
+
+                                <option value="">
+                                    --- Choose Your Role ---
+                                </option>
+
+                            </select>
+
+                            <label asp-for="Input.Role">
+                                Register As
+                            </label>
+
+                        </div>
+
+                        <span asp-validation-for="Input.Role"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                    <!-- FULL NAME -->
+                    <div class="col-md-12 mb-3">
+
+                        <div class="form-floating custom-input">
+
+                            <input asp-for="Input.FullName"
+                                   class="form-control border-0 border-bottom rounded-0 px-0" />
+
+                            <label asp-for="Input.FullName"></label>
+
+                        </div>
+
+                        <span asp-validation-for="Input.FullName"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+                    
+
+                    <!-- EMAIL -->
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-floating custom-input">
+
+                            <input asp-for="Input.Email"
+                                   class="form-control border-0 border-bottom rounded-0 px-0" />
+
+                            <label asp-for="Input.Email"></label>
+
+                        </div>
+
+                        <span asp-validation-for="Input.Email"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                    <!-- PHONE -->
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-floating custom-input">
+
+                            <input asp-for="Input.PhoneNumber"
+                                   class="form-control border-0 border-bottom rounded-0 px-0" />
+
+                            <label asp-for="Input.PhoneNumber"></label>
+
+                        </div>
+
+                        <span asp-validation-for="Input.PhoneNumber"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-floating custom-input">
+
+                            <input asp-for="Input.Password"
+                                   type="password"
+                                   class="form-control border-0 border-bottom rounded-0 px-0" />
+
+                            <label asp-for="Input.Password"></label>
+
+                        </div>
+
+                        <span asp-validation-for="Input.Password"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                    <!-- CONFIRM PASSWORD -->
+                    <div class="col-md-6 mb-3">
+
+                        <div class="form-floating custom-input">
+
+                            <input asp-for="Input.ConfirmPassword"
+                                   type="password"
+                                   class="form-control border-0 border-bottom rounded-0 px-0" />
+
+                            <label asp-for="Input.ConfirmPassword"></label>
+
+                        </div>
+
+                        <span asp-validation-for="Input.ConfirmPassword"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+                    <!-- Date -->
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating custom-input">
+                            <input asp-for="Input.JoinDate"
+                                   type="date"
+                                   class="form-control border-0 border-bottom bg-transparent rounded-0 px-0" />
+
+                            <label asp-for="Input.JoinDate" class="ps-0">
+                                Join Date
+                            </label>
+
+                            <span asp-validation-for="Input.JoinDate"
+                                  class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- VENDOR SECTION -->
+                <div id="vendorSection"
+                     class="p-4 mb-4 rounded-3"
+                     style="display:none;background:#f8fdff;border:1px dashed #2bcde2;">
+
+                    <h5 class="mb-4 text-info">
+                        Vendor Information
+                    </h5>
+
+                    <div class="row">
+
+                        <!-- Vendor Name -->
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating custom-input">
+
+                                <input asp-for="Input.VendorName"
+                                       id="vendorNameInput"
+                                       class="form-control border-0 border-bottom bg-transparent rounded-0 px-0" />
+
+                                <label asp-for="Input.VendorName"></label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+
+                            <div class="form-floating custom-input">
+
+                                <input asp-for="Input.VendorEmail"
+                                       class="form-control border-0 border-bottom rounded-0 px-0" />
+
+                                <label asp-for="Input.VendorEmail"></label>
+
+                            </div>
+
+                            <span asp-validation-for="Input.VendorEmail"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+                        <!-- Vendor Type -->
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating custom-input">
+
+                                <input asp-for="Input.VendorType"
+                                       class="form-control border-0 border-bottom bg-transparent rounded-0 px-0" />
+
+                                <label asp-for="Input.VendorType"></label>
+
+                            </div>
+                        </div>
+
+                        <!-- Trade License -->
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating custom-input">
+
+                                <input asp-for="Input.TradeLicenceNo"
+                                       id="tradeLicenseInput"
+                                       class="form-control border-0 border-bottom bg-transparent rounded-0 px-0" />
+
+                                <label asp-for="Input.TradeLicenceNo"></label>
+
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating custom-input">
+
+                                <select asp-for="Input.LocationId"
+                                        asp-items="Model.LocationList"
+                                        class="form-select border-0 border-bottom rounded-0 px-0">
+
+                                    <option value="">
+                                        Select Location
+                                    </option>
+
+                                </select>
+
+                                <label asp-for="Input.LocationId"></label>
+
+                            </div>
+                        </div>
+                        
+
+                        <!-- Vendor Address -->
+                        <div class="col-md-12 mb-3">
+                            <div class="form-floating custom-input">
+
+                                <textarea asp-for="Input.VendorAddress"
+                                          class="form-control"
+                                              style="height:100px">
+                                </textarea>
+
+                                    <label asp-for="Input.VendorAddress"></label>
+
+                                </div>
+                            </div>
+
+                            <!-- Vendor Description -->
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating custom-input">
+
+                                    <textarea asp-for="Input.VendorDescription"
+                                              class="form-control"
+                                                  style="height:120px">
+                                    </textarea>
+
+                                        <label asp-for="Input.VendorDescription"></label>
+
+                                    </div>
+                                </div>
+
+                                <!-- Owner Description -->
+                                <div class="col-md-12 mb-3">
+                                    <div class="form-floating custom-input">
+
+                                        <textarea asp-for="Input.OwnerDescription"
+                                                  class="form-control"
+                                                      style="height:100px">
+                                        </textarea>
+
+                                            <label asp-for="Input.OwnerDescription"></label>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Vendor Image -->
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="fw-bold mb-2">
+                                            Vendor Image
+                                        </label>
+
+                                        <input asp-for="Input.VendorImage"
+                                               type="file"
+                                               class="form-control" />
+
+                                    </div>
+
+                                    
+                                    <!-- Owner Image -->
+                                    <div class="col-md-6 mb-3">
+
+                                        <label class="fw-bold mb-2">
+                                            Owner Image
+                                        </label>
+
+                                        <input asp-for="Input.OwnerImage"
+                                               type="file"
+                                               class="form-control" />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- BUTTON -->
+                            <button type="submit"
+                                    class="w-100 btn btn-register text-white fw-bold py-3 shadow-sm mt-3">
+
+                                Create My Account
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="col-lg-4 p-5 text-white d-flex flex-column justify-content-center text-center right-panel">
+
+                        <div class="mb-4">
+                            <i class="bi bi-person-plus-fill"
+                                   style="font-size:3rem;">
+                            </i>
+                        </div>
+
+                        <h3 class="mb-3">
+                            Already a Member?
+                        </h3>
+
+                        <p class="mb-4 opacity-75 small">
+                            Sign in to access your dashboard.
+                        </p>
+
+                        <a asp-page="./Login"
+                               class="btn btn-outline-light rounded-pill px-4 mb-5">
+
+                            Sign In
+
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+            @*nicher js er jonno _Layout.cs a add kora lagbe
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+*@
+    
+            @section Scripts {
+
+                <partial name="_ValidationScriptsPartial" />
+
+                <script>
+
+                    $(document).ready(function () {
+
+                        function toggleVendorSection() {
+
+                            let selectedRole =
+                                $("#roleSelect").val();
+
+                            console.log(selectedRole);
+
+                            if (selectedRole === "Manager") {
+
+                                $("#vendorSection")
+                                    .stop(true, true)
+                                    .slideDown(400);
+
+                                $("#vendorNameInput")
+                                    .prop("required", true);
+
+                                $("#tradeLicenseInput")
+                                    .prop("required", true);
+                            }
+                            else {
+
+                                $("#vendorSection")
+                                    .stop(true, true)
+                                    .slideUp(300);
+
+                                $("#vendorNameInput")
+                                    .prop("required", false)
+                                    .val("");
+
+                                $("#tradeLicenseInput")
+                                    .prop("required", false)
+                                    .val("");
+                            }
+                        }
+
+                        toggleVendorSection();
+
+                        $("#roleSelect").change(function () {
+
+                            toggleVendorSection();
+
+                        });
+
+                    });
+
+                </script>
+            }
+            @* @section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        console.log("JS RUNNING");
+
+        $(document).ready(function () {
+
+            console.log("DOCUMENT READY");
+
+            function toggleVendorSection() {
+
+                let selectedRole = $("#roleSelect").val();
+
+                console.log("Selected Role:", selectedRole);
+
+                if (selectedRole === "Manager") {
+
+                    $("#vendorSection").show();
+
+                    $("#vendorNameInput").prop("required", true);
+
+                    $("#tradeLicenseInput").prop("required", true);
+                }
+                else {
+
+                    $("#vendorSection").hide();
+
+                    $("#vendorNameInput")
+                        .prop("required", false)
+                        .val("");
+
+                    $("#tradeLicenseInput")
+                        .prop("required", false)
+                        .val("");
+                }
+            }
+
+            toggleVendorSection();
+
+            $("#roleSelect").on("change", function () {
+
+                toggleVendorSection();
+
+            });
+
+        });
+
+    </script>
+} *@
+
+            <style>
+
+                body {
+                    background-color: #f4f7f8;
+                    font-family: 'Segoe UI';
+                }
+
+                .register-container {
+                    min-height: 90vh;
+                }
+
+                .register-card {
+                    background: #fff;
+                    border-radius: 25px;
+                    overflow: hidden;
+                    max-width: 1000px;
+                    width: 100%;
+                }
+
+                .right-panel {
+                    background: linear-gradient(135deg,#2bcde2,#0099ad);
+                }
+
+                .custom-input .form-control,
+                .custom-input .form-select {
+                    box-shadow: none !important;
+                    border-bottom: 2px solid #eee !important;
+                }
+
+                    .custom-input .form-control:focus,
+                    .custom-input .form-select:focus {
+                        border-bottom-color: #2bcde2 !important;
+                    }
+
+                .btn-register {
+                    background: linear-gradient(45deg,#2bcde2,#0099ad);
+                    border: none;
+                    border-radius: 12px;
+                }
+
+            </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="register-container d-flex align-items-center justify-content-center py-5">
+    <div class="register-card shadow-lg row g-0">
+        <div class="col-lg-8 p-4 p-md-5 bg-white">
+            <h2 class="fw-bold mb-1" style="color: #2bcde2;">Join Us Today!</h2>
+            <p class="text-muted mb-4">Create your account to start shopping or selling.</p>
+
+            <form id="registerForm" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-floating custom-input">
+                            <select asp-for="Input.Role" asp-items="@Model.RoleList" id="roleSelect" class="form-select border-0 border-bottom rounded-0 px-0" aria-required="true">
+                                <option value="" disabled selected>--- Choose Your Role ---</option>
+                            </select>
+                            <label asp-for="Input.Role" class="ps-0">I want to register as...</label>
+                            <span asp-validation-for="Input.Role" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <div class="form-floating custom-input">
+                            <input asp-for="Input.FullName" class="form-control border-0 border-bottom rounded-0 px-0" placeholder="Full Name" />
+                            <label asp-for="Input.FullName" class="ps-0">Full Name</label>
+                            <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating custom-input">
+                            <input asp-for="Input.Email" class="form-control border-0 border-bottom rounded-0 px-0" placeholder="Email" />
+                            <label asp-for="Input.Email" class="ps-0">Email Address</label>
+                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating custom-input">
+                            <input asp-for="Input.PhoneNumber" class="form-control border-0 border-bottom rounded-0 px-0" placeholder="Phone" />
+                            <label asp-for="Input.PhoneNumber" class="ps-0">Phone Number</label>
+                            <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating custom-input">
+                            <input asp-for="Input.Password" type="password" class="form-control border-0 border-bottom rounded-0 px-0" placeholder="Password" />
+                            <label asp-for="Input.Password" class="ps-0">Password</label>
+                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="form-floating custom-input">
+                            <input asp-for="Input.ConfirmPassword" type="password" class="form-control border-0 border-bottom rounded-0 px-0" placeholder="Confirm" />
+                            <label asp-for="Input.ConfirmPassword" class="ps-0">Confirm Password</label>
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="vendorSection" class="p-4 mb-4 rounded-3" style="display: none; background-color: #f8fdff; border: 1px dashed #2bcde2;">
+                    <h6 class="fw-bold mb-3" style="color: #0099ad;"><i class="bi bi-shop me-2"></i>Shop / Vendor Details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating custom-input">
+                                <input asp-for="Input.VendorName" id="vendorNameInput" class="form-control border-0 border-bottom bg-transparent rounded-0 px-0" placeholder="Shop Name" />
+                                <label asp-for="Input.VendorName" class="ps-0">Shop Name</label>
+                                <span asp-validation-for="Input.VendorName" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating custom-input">
+                                <input asp-for="Input.TradeLicenceNo" id="tradeLicenseInput" class="form-control border-0 border-bottom bg-transparent rounded-0 px-0" placeholder="License" />
+                                <label asp-for="Input.TradeLicenceNo" class="ps-0">Trade License No</label>
+                                <span asp-validation-for="Input.TradeLicenceNo" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-floating custom-input">
+                                <input asp-for="Input.LocationId" type="number" class="form-control border-0 border-bottom bg-transparent rounded-0 px-0" placeholder="Location ID" />
+                                <label asp-for="Input.LocationId" class="ps-0">Location (Area ID)</label>
+                                <span asp-validation-for="Input.LocationId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-register text-white fw-bold py-3 shadow-sm mt-3">Create My Account</button>
+            </form>
+        </div>
+
+        <div class="col-lg-4 p-5 text-white d-flex flex-column justify-content-center text-center right-panel">
+            <div class="mb-4">
+                <i class="bi bi-person-plus-fill" style="font-size: 3rem;"></i>
+            </div>
+            <h3 class="mb-3">Already a Member?</h3>
+            <p class="mb-4 opacity-75 small">Sign in to access your dashboard and manage your shop.</p>
+            <a asp-page="./Login" class="btn btn-outline-light rounded-pill px-4 mb-5">Sign In</a>
+            <p class="small opacity-75 mt-auto">Secure & Encrypted Registration</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+
+    $(document).ready(function () {
+
+    function toggleVendorSection() {
+
+        let selectedRole = $("#roleSelect").val();
+
+        if (selectedRole === "Manager") {
+
+            $("#vendorSection").slideDown();
+
+            $("#vendorNameInput").prop("required", true);
+
+            $("#tradeLicenseInput").prop("required", true);
+        }
+        else {
+
+            $("#vendorSection").slideUp();
+
+            $("#vendorNameInput").prop("required", false).val("");
+
+            $("#tradeLicenseInput").prop("required", false).val("");
+        }
+    }
+
+    toggleVendorSection();
+
+    $("#roleSelect").change(function () {
+
+        toggleVendorSection();
+
+    });
+});
+
+</script>
+}
+
+<style>
+    body { background-color: #f4f7f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .register-container { min-height: 90vh; }
+    .register-card { background: #fff; border-radius: 25px; overflow: hidden; max-width: 1000px; width: 100%; border: none; }
+    .right-panel { background: linear-gradient(135deg, #2bcde2 0%, #0099ad 100%); }
+    .custom-input .form-control, .custom-input .form-select { box-shadow: none !important; border-bottom: 2px solid #eee !important; }
+    .custom-input .form-control:focus, .custom-input .form-select:focus { border-bottom-color: #2bcde2 !important; }
+    .btn-register { background: linear-gradient(45deg, #2bcde2, #0099ad); border: none; border-radius: 12px; transition: all 0.3s; }
+    .btn-register:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(43, 205, 226, 0.4); }
+</style> *@
+
+
+
